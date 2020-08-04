@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using TicketProject.DataAccess.Data;
 using TicketProject.DataAccess.IReposityory;
+using TicketProject.DataAccess.Reposityory.IReposityory;
 
 namespace TicketProject.DataAccess.Reposityory
 {
@@ -14,8 +15,10 @@ namespace TicketProject.DataAccess.Reposityory
             _db = db;
             Ticket = new TicketRepository(_db);
             Company = new CompanyRepository(_db);
+            ApplicationUser = new ApplicationUserRepository(_db);
             SP_Call = new SP_Call(_db);
         }
+        public IApplicationUserRepository ApplicationUser { get; private set; }
         public ITicketRepository Ticket { get; private set; }
         public ICompanyRepository Company { get; private set; }
 

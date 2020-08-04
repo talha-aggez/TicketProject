@@ -14,6 +14,8 @@ using Microsoft.Extensions.Hosting;
 using TicketProject.DataAccess.Data;
 using TicketProject.DataAccess.IReposityory;
 using TicketProject.DataAccess.Reposityory;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using TicketProject.Utility;
 
 namespace TicketProject
 {
@@ -32,8 +34,9 @@ namespace TicketProject
             services.AddDbContextPool<ApplicationDbContext>(options =>
                 options.UseMySql(
                     Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            services.AddIdentity<IdentityUser,IdentityRole>().AddDefaultTokenProviders()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddSingleton<IEmailSender, EmailSender>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddControllersWithViews().AddRazorRuntimeCompilation();//Sayfalarýn güncellenmesi için
             services.AddRazorPages();

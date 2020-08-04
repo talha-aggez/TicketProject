@@ -15,5 +15,6 @@ namespace TicketProject.DataAccess.Data
         }
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<Company> Companies { get; set; }
+        public DbSet<ApplicationUser> ApplicationUsers{ get; set; }
     }
 }
