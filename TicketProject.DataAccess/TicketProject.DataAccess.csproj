@@ -7,6 +7,10 @@
   <ItemGroup>
     <Compile Remove="Migrations\20200728142852_addTicketToDb.cs" />
     <Compile Remove="Migrations\20200728142852_addTicketToDb.Designer.cs" />
+    <Compile Remove="Migrations\20200805181026_CreatingTicketUserToDb.cs" />
+    <Compile Remove="Migrations\20200805181026_CreatingTicketUserToDb.Designer.cs" />
+    <Compile Remove="Migrations\20200805204710_AddRolesToApplicationUserDb.cs" />
+    <Compile Remove="Migrations\20200805204710_AddRolesToApplicationUserDb.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

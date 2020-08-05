@@ -11,8 +11,9 @@ function loadDataTable() {
             "url": "/Customer/Ticket/GetAll"
         },
         "columns": [
-            { "data": "title", "width": "60%" },
-            { "data": "text", "width": "60%" },
+            { "data": "title", "width": "15%" },
+            { "data": "text", "width": "15%" },
+            { "data": "userEmail", "width": "15%" },
             {
                 "data": "id",
                 "render": function (data) {
@@ -26,8 +27,8 @@ function loadDataTable() {
                                 </a>
                             </div>
                            `;
-                }, "width": "40%"
-            }
+                }, "width": "15%"
+            },
         ]
     });
 }

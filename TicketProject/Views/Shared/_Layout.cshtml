@@ -28,20 +28,52 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Ticket Management
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="#">Action</a>
-                                <a class="dropdown-item " asp-area="Customer" asp-controller="Ticket" asp-action="Index">Ticket Manager</a>
-                                <a class="dropdown-item " asp-area="Admin" asp-controller="Company" asp-action="Index">Company Manager</a>
-                                <a class="dropdown-item " asp-area="Admin" asp-controller="User" asp-action="Index">User Manager</a>
-                                <a class="dropdown-item" href="#">Another action</a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#">Something else here</a>
-                            </div>
-                        </li>
+                        @if (User.IsInRole(TicketProject.Utility.SD.Role_User))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    User Menu
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item " asp-area="Customer" asp-controller="Ticket" asp-action="Index">Ticket Manager</a>
+                                </div>
+                            </li>
+                        }
+                        @if (User.IsInRole(TicketProject.Utility.SD.Role_Admin))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Admin Menu
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item " asp-area="Customer" asp-controller="Ticket" asp-action="Index">Ticket Manager</a>
+                                    <a class="dropdown-item " asp-area="Admin" asp-controller="Company" asp-action="Index">Company Manager</a>
+                                    <a class="dropdown-item " asp-area="Admin" asp-controller="User" asp-action="Index">User Manager</a>
+                                </div>
+                            </li>
+                        }
+                        @if (User.IsInRole(TicketProject.Utility.SD.Role_SupportUsers))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    SupportUsers Menu
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item " asp-area="Customer" asp-controller="Ticket" asp-action="Index">Ticket Manager</a>
+                                </div>
+                            </li>
+                        }
+                        @if (User.IsInRole(TicketProject.Utility.SD.Role_CompanyAgents))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    CompanyAgent Menu
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item " asp-area="Customer" asp-controller="Ticket" asp-action="Index">Ticket Manager</a>
+                                </div>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
