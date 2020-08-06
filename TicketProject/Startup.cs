@@ -16,6 +16,7 @@ using TicketProject.DataAccess.IReposityory;
 using TicketProject.DataAccess.Reposityory;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using TicketProject.Utility;
+using BulkyBook.Utility;
 
 namespace TicketProject
 {
@@ -37,6 +38,7 @@ namespace TicketProject
             services.AddIdentity<IdentityUser,IdentityRole>().AddDefaultTokenProviders()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddSingleton<IEmailSender, EmailSender>();
+            services.Configure<EmailOptions>(Configuration);
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddControllersWithViews().AddRazorRuntimeCompilation();//Sayfalarýn güncellenmesi için
             services.AddRazorPages();
