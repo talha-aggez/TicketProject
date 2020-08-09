@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TicketProject.DataAccess.Data;
 
 namespace TicketProject.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200808145948_addStatusToTicketDb")]
+    partial class addStatusToTicketDb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -253,9 +255,6 @@ namespace TicketProject.DataAccess.Migrations
 
                     b.Property<string>("CreatingTicketId")
                         .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
-
-                    b.Property<string>("EmployeeEmail")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("PersonelTicketId")
                         .HasColumnType("varchar(255) CHARACTER SET utf8mb4");

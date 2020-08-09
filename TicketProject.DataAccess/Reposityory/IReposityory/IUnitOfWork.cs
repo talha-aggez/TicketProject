@@ -12,6 +12,7 @@ namespace TicketProject.DataAccess.IReposityory
         ITicketRepository Ticket { get; }
         SP_Call SP_Call { get; }
         IApplicationUserRepository ApplicationUser{get;}
+        ITicketManagement  TicketManagement { get; }
         public void Save();
     }
 }

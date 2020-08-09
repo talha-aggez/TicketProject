@@ -2,11 +2,13 @@
 
 $(document).ready(function () {
     loadDataTable();
+    
 });
 
 
 function loadDataTable() {
     dataTable = $('#tblData').DataTable({
+        "paging" : false,
         "ajax": {
             "url": "/Customer/Ticket/GetAll"
         },
@@ -14,6 +16,7 @@ function loadDataTable() {
             { "data": "title", "width": "15%" },
             { "data": "text", "width": "15%" },
             { "data": "userEmail", "width": "15%" },
+            {"data" : "status" , "width": "15%"},
             {
                 "data": "id",
                 "render": function (data) {
@@ -24,6 +27,18 @@ function loadDataTable() {
                                 </a>
                                 <a onclick=Delete("/Customer/Ticket/Delete/${data}") class="btn btn-danger text-white" style="cursor:pointer">
                                     <i class="fas fa-trash-alt"></i> 
+                                </a>
+                            </div>
+                           `;
+                }, "width": "15%"
+            },
+            {
+                "data": "id",
+                "render": function (data) {
+                    return `
+                            <div class="text-center">
+                                <a href="/Customer/Ticket/UserAdd/${data}" class="btn btn-success text-white" style="cursor:pointer">
+                                    <i class="fas fa-edit"></i> 
                                 </a>
                             </div>
                            `;

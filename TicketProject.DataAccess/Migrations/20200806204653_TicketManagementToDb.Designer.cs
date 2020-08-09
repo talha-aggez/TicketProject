@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TicketProject.DataAccess.Data;
 
 namespace TicketProject.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200806204653_TicketManagementToDb")]
+    partial class TicketManagementToDb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -254,12 +256,6 @@ namespace TicketProject.DataAccess.Migrations
                     b.Property<string>("CreatingTicketId")
                         .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
-                    b.Property<string>("EmployeeEmail")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
-
-                    b.Property<string>("PersonelTicketId")
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
-
                     b.Property<string>("Text")
                         .IsRequired()
                         .HasColumnType("varchar(50) CHARACTER SET utf8mb4")
@@ -273,17 +269,9 @@ namespace TicketProject.DataAccess.Migrations
                     b.Property<string>("UserEmail")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<bool>("lockTicketForUser")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<string>("status")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CreatingTicketId");
-
-                    b.HasIndex("PersonelTicketId");
 
                     b.ToTable("Tickets");
                 });
@@ -388,10 +376,6 @@ namespace TicketProject.DataAccess.Migrations
                     b.HasOne("TicketProject.Models.ApplicationUser", "CreatingTicket")
                         .WithMany()
                         .HasForeignKey("CreatingTicketId");
-
-                    b.HasOne("TicketProject.Models.ApplicationUser", "PersonelTicket")
-                        .WithMany()
-                        .HasForeignKey("PersonelTicketId");
                 });
 
             modelBuilder.Entity("TicketProject.Models.TicketManagement", b =>

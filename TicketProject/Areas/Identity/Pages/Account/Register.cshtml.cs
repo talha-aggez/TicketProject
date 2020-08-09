@@ -81,7 +81,7 @@ namespace TicketProject.Areas.Identity.Pages.Account
             public IEnumerable<SelectListItem> CompanyList { get; set; }
 
             public IEnumerable<SelectListItem> RoleList { get; set; }
-    }
+        }
 
         public async Task OnGetAsync(string returnUrl = null)
         {

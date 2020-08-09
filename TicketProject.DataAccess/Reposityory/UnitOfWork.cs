@@ -22,6 +22,8 @@ namespace TicketProject.DataAccess.Reposityory
         public ITicketRepository Ticket { get; private set; }
         public ICompanyRepository Company { get; private set; }
 
+        public ITicketManagement TicketManagement { get; private set; }
+
         public ISP_Call SP_Call { get; private set; }
 
         SP_Call IUnitOfWork.SP_Call => throw new NotImplementedException();

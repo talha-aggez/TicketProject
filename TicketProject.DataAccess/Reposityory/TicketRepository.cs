@@ -23,7 +23,10 @@ namespace TicketProject.DataAccess.Reposityory
             {
                 objFromDb.Title = ticket.Title;
                 objFromDb.Text = ticket.Text;
-                _db.SaveChanges();
+                objFromDb.status = ticket.status;
+               // objFromDb.PersonelTicket = ticket.PersonelTicket;
+                objFromDb.EmployeeEmail = ticket.EmployeeEmail;
+               _db.SaveChanges();
             }
         }
     }
