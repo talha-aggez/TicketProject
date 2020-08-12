@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Web.Mvc;
+using TicketProject.Utility;
 
 namespace TicketProject.Models
 {
@@ -24,10 +25,11 @@ namespace TicketProject.Models
 
         public ApplicationUser PersonelTicket { get; set;  } // ticketla ilgilenen user....
 
-        public string status { get; set; }
+        public RowStatus status { get; set; }
         public bool lockTicketForUser { get; set; }
         [NotMapped]
         public List<ApplicationUser> UserList { get; set; }
+        public string ImageUrl { get; set; }
         //public ApplicationUser  TicketController { get; set; } // ticketı kontrol eden user.....
     }
 }

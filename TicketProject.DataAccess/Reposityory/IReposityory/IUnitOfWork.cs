@@ -8,11 +8,11 @@ namespace TicketProject.DataAccess.IReposityory
 {
     public interface IUnitOfWork : IDisposable
     {
+        ITicket_ManagementRepository Ticket_Management { get; }
         ICompanyRepository Company { get; }
         ITicketRepository Ticket { get; }
         SP_Call SP_Call { get; }
         IApplicationUserRepository ApplicationUser{get;}
-        ITicketManagement  TicketManagement { get; }
         public void Save();
     }
 }

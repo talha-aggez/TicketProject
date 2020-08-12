@@ -35,7 +35,7 @@ namespace TicketProject.Areas.Identity.Pages.Account
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender,
-            RoleManager<IdentityRole>roleManager,
+            RoleManager<IdentityRole> roleManager,
             IUnitOfWork unitOfWork)
         {
             _userManager = userManager;
@@ -123,7 +123,7 @@ namespace TicketProject.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
-                    if(!await _roleManager.RoleExistsAsync(SD.Role_Admin))
+                    if (!await _roleManager.RoleExistsAsync(SD.Role_Admin))
                     {
                         await _roleManager.CreateAsync(new IdentityRole(SD.Role_Admin));
                     }
@@ -149,7 +149,7 @@ namespace TicketProject.Areas.Identity.Pages.Account
                     }
                     else
                     {
-                        if(user.CompanyId > 0)
+                        if (user.CompanyId > 0)
                         {
                             await _userManager.AddToRoleAsync(user, SD.Role_CompanyAdmin);
                         }
@@ -166,9 +166,9 @@ namespace TicketProject.Areas.Identity.Pages.Account
                     await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
                         $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
-                    if (_userManager.Options.SignIn.RequireConfirmedAccount)
+                    if (_userManager.Options.SignIn.RequireConfirmedAccount && user.EmailConfirmed)
                     {
-                        return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
+                        return RedirectToPage("RegisterConfirmation", new { email = Input.Email});
                     }
                     else
                     {

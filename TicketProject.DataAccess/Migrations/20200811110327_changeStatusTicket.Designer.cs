@@ -9,8 +9,8 @@ using TicketProject.DataAccess.Data;
 namespace TicketProject.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200806204653_TicketManagementToDb")]
-    partial class TicketManagementToDb
+    [Migration("20200811110327_changeStatusTicket")]
+    partial class changeStatusTicket
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -256,6 +256,12 @@ namespace TicketProject.DataAccess.Migrations
                     b.Property<string>("CreatingTicketId")
                         .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
+                    b.Property<string>("EmployeeEmail")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("PersonelTicketId")
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
+
                     b.Property<string>("Text")
                         .IsRequired()
                         .HasColumnType("varchar(50) CHARACTER SET utf8mb4")
@@ -269,9 +275,17 @@ namespace TicketProject.DataAccess.Migrations
                     b.Property<string>("UserEmail")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
+                    b.Property<bool>("lockTicketForUser")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int>("status")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CreatingTicketId");
+
+                    b.HasIndex("PersonelTicketId");
 
                     b.ToTable("Tickets");
                 });
@@ -376,6 +390,10 @@ namespace TicketProject.DataAccess.Migrations
                     b.HasOne("TicketProject.Models.ApplicationUser", "CreatingTicket")
                         .WithMany()
                         .HasForeignKey("CreatingTicketId");
+
+                    b.HasOne("TicketProject.Models.ApplicationUser", "PersonelTicket")
+                        .WithMany()
+                        .HasForeignKey("PersonelTicketId");
                 });
 
             modelBuilder.Entity("TicketProject.Models.TicketManagement", b =>

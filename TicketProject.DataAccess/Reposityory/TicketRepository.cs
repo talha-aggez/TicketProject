@@ -21,10 +21,14 @@ namespace TicketProject.DataAccess.Reposityory
             var objFromDb = _db.Tickets.FirstOrDefault(s => s.Id == ticket.Id);
             if (objFromDb != null)
             {
+                if (ticket.ImageUrl != null)
+                {
+                    objFromDb.ImageUrl = ticket.ImageUrl;
+                }
                 objFromDb.Title = ticket.Title;
                 objFromDb.Text = ticket.Text;
                 objFromDb.status = ticket.status;
-               // objFromDb.PersonelTicket = ticket.PersonelTicket;
+                objFromDb.PersonelTicket = ticket.PersonelTicket;
                 objFromDb.EmployeeEmail = ticket.EmployeeEmail;
                _db.SaveChanges();
             }

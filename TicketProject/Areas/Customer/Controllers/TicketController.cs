@@ -1,7 +1,15 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.OData.Edm;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
@@ -21,16 +29,48 @@ namespace TicketProject.Areas.Admin.Controllers
         private readonly IUnitOfWork _unitofwork;
         private readonly ApplicationDbContext _db;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly IWebHostEnvironment _hostEnvoirement;//resimleri dosyada güncelleme işlemi
         public IEnumerable<SelectListItem> SupportUserList { get; set; }
-        public TicketController(IUnitOfWork unitOfWork,ApplicationDbContext db, UserManager<IdentityUser> userManager)
+        public TicketController(IUnitOfWork unitOfWork,ApplicationDbContext db, UserManager<IdentityUser> userManager,IWebHostEnvironment hostEnvironment)
         {
             _userManager = userManager;
             _unitofwork = unitOfWork;
+            _hostEnvoirement = hostEnvironment;
             _db = db;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index(int? id)
         {
-            return View();
+            int temp;
+            if (id == null || id < 0)
+            {
+                temp = 0;
+            }
+            else
+            {
+                temp = (int)id;
+            }
+            var model = new TicketViewModel
+            {
+                Sayac = temp,
+            };
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+            }
+            //var roles = await _userManager.GetRolesAsync(user);
+            await LoadAsync(user);
+            if (User.IsInRole(SD.Role_Admin) || User.IsInRole(SD.Role_CompanyAgents))
+            {
+                //var allObj = _db.Tickets.Take(2).ToList();
+                model.Tickets = await _db.Tickets.Skip(model.Sayac).Take(2).ToListAsync();
+                return View(model);
+            }
+            else
+            {
+                model.Tickets = await _db.Tickets.OrderByDescending(s=> s.Id).Where(u => u.UserEmail == Username).Skip(model.Sayac).Take(2).ToListAsync();
+                return View(model);
+            }
         }
         private async Task LoadAsync(IdentityUser user)
         {
@@ -75,11 +115,14 @@ namespace TicketProject.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
+                Ticket_Management ticket_Management = new Ticket_Management();
                 string a = userRoleViewModel.ticket.EmployeeEmail + " ";
                 int b = userRoleViewModel.ticket.Id;
                 userRoleViewModel.ticket.PersonelTicket = _db.ApplicationUsers.Where(x => x.Email == userRoleViewModel.ticket.EmployeeEmail).FirstOrDefault();
+                ticket_Management = _db.Ticket_Managements.Where(u => u.Ticket.Id == userRoleViewModel.ticket.Id).FirstOrDefault();
+                ticket_Management.Status = TicketStatus.Seen;
                 _unitofwork.Ticket.Update(userRoleViewModel.ticket);
-               _unitofwork.Save();
+                _unitofwork.Save();
               return RedirectToAction(nameof(Index));
             }
             return View(userRoleViewModel);
@@ -102,9 +145,41 @@ namespace TicketProject.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Upsert(Ticket ticket)
         {
+            Ticket_Management ticket_Management = new Ticket_Management();
             if (ModelState.IsValid)
             {
-                if(ticket.Id == 0)
+                string webRootPath = _hostEnvoirement.WebRootPath;
+                var files = HttpContext.Request.Form.Files;
+                if (files.Count > 0)
+                {
+                    string fileName = Guid.NewGuid().ToString();
+                    var uploads = Path.Combine(webRootPath, @"images");
+                    var extension = Path.GetExtension(files[0].FileName);
+                    if (ticket.ImageUrl != null)
+                    {
+                        //remove old image or edit
+                        var imagePath = Path.Combine(webRootPath, ticket.ImageUrl.TrimStart('\\'));
+                        if (System.IO.File.Exists(imagePath))
+                        {
+                            System.IO.File.Delete(imagePath);
+                        }
+                    }
+                    using (var filesStreams = new FileStream(Path.Combine(uploads, fileName + extension), FileMode.Create))
+                    {
+                        files[0].CopyTo(filesStreams);
+                    }
+                    ticket.ImageUrl = @"\images\" + fileName + extension;
+                }
+                else
+                {
+                    //update when do not change 
+                    if (ticket.Id != 0)
+                    {
+                        Ticket objFromDb = _unitofwork.Ticket.Get(ticket.Id);
+                        ticket.ImageUrl = objFromDb.ImageUrl;
+                    }
+                }
+                if (ticket.Id == 0)
                 {
                     var user = await _userManager.GetUserAsync(User);
                     if (user == null)
@@ -114,6 +189,10 @@ namespace TicketProject.Areas.Admin.Controllers
                     await LoadAsync(user);
                     ticket.CreatingTicket = _db.ApplicationUsers.Where(u => u.Email == Username).FirstOrDefault();
                     ticket.UserEmail = ticket.CreatingTicket.Email;
+                    ticket_Management.Ticket = ticket;
+                    ticket_Management.Date = Date.Now;
+                    ticket_Management.Status = TicketStatus.Sended;
+                    _db.Ticket_Managements.Add(ticket_Management);
                     _unitofwork.Ticket.Add(ticket);
                 }
                 else
@@ -125,42 +204,46 @@ namespace TicketProject.Areas.Admin.Controllers
             }
             return View(ticket);
         }
-        #region API CALLS
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> Delete(int id)
         {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
+            var objFromDb = await _db.Tickets.FindAsync(id);
+            objFromDb.status = RowStatus.Delete;
+            if (objFromDb == null)
             {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-            }
-            //var roles = await _userManager.GetRolesAsync(user);
-            await LoadAsync(user);
-            if (User.IsInRole(SD.Role_Admin) || User.IsInRole(SD.Role_CompanyAgents))
-            {
-                //var allObj = _db.Tickets.Take(2).ToList();
-                var allObj = _db.Tickets.ToList();
-                return Json(new { data = allObj });
-            }
-            else
-            {
-                var allObj = _db.Tickets.Where(u=>u.UserEmail == Username).ToList();
-                return Json(new { data = allObj });
-            }
-        }
-        [HttpDelete]
-        public IActionResult Delete(int id)
-        {
-            var objFromDb = _unitofwork.Ticket.Get(id);
-            objFromDb.status = "delete";
-            if(objFromDb == null)
-            {
-                return Json(new { success = true, message = "Delete Succesfull" });
+                return NotFound();
             }
             _unitofwork.Ticket.Update(objFromDb);
             _unitofwork.Save();
-            return Json(new { success = true, message = "Delete Succesfull" });
+            return RedirectToAction(nameof(Index));
         }
-        #endregion
+        [HttpPost , ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var objFromDb = await _db.Tickets.FindAsync(id);
+            objFromDb.status = RowStatus.Delete;
+            if(objFromDb == null)
+            {
+                return NotFound();
+            }
+            _unitofwork.Ticket.Update(objFromDb);
+            _unitofwork.Save();
+            return Redirect("Ticket/Index");
+        }
+        public IActionResult Status(int? id)
+        {
+            Ticket_Management ticket = new Ticket_Management();
+            if (id == null)
+            {
+                return View(ticket);
+            }
+            ticket = _db.Ticket_Managements.Where(u => u.Ticket.Id == id).FirstOrDefault();
+            if (ticket == null)
+            {
+                return NotFound();
+            }
+            return View(ticket);
+        }
+
     }
 }

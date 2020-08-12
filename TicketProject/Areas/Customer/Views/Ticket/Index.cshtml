@@ -1,4 +1,4 @@
-﻿@model TicketProject.Models.Ticket
+﻿@model TicketProject.Areas.Customer.TicketViewModel
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -14,20 +14,61 @@
 </div>
 <br />
 <div class="p-4 border rounded">
-    <table id="tblData" class="table table-striped table-bordered" style="width:100%">
-        <thead class="thead-dark">
-            <tr class="table-info">
-                <th>Title</th>
-                <th>Text</th>
-                <th>Email</th>
-                <th>Status</th>
-                <th></th>
-                <th></th>
+    <form method="post">
+        @if (Model.Tickets.Count() > 0)
+        {
+            <table class="table table-striped border">
+                <tr class="table-secondary">
+                    <th>
+                        <label asp-for="Tickets.FirstOrDefault().Title"></label>
+                    </th>
+                    <th>
+                        @*@@Html.DisplayName(m=>m.Books.FirstOrderDefault().Author)*@
+                        <label asp-for="Tickets.FirstOrDefault().Text"></label>
+                    </th>
+                    <th>
+                        @*@@Html.DisplayName(m=>m.Books.FirstOrderDefault().Author)*@
+                        <label asp-for="Tickets.FirstOrDefault().UserEmail"></label>
+                    </th>
+                </tr>
+                @foreach (var item in Model.Tickets)
+                {
+            <tr>
+                <td>
+                    @Html.DisplayFor(m => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => item.Text)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => item.UserEmail)
+                </td>
+                <td>
+                    <a asp-action="Delete" asp-route-id="@item.Id" onClick="return confirm('Are you sure you want to delete')" class="btn btn-danger btn-sm">Delete</a>
+                    <a asp-controller="Ticket" asp-action="Upsert" asp-route-id="@item.Id" class="btn btn-success btn-sm text-white">Edit</a>
+                </td>
+                <td>
+                    <a asp-controller="Ticket" asp-action="UserAdd" asp-route-id="@item.Id" class="btn btn-success btn-sm text-white">UserAdd</a>
+                </td>
+                <td>
+                    <a asp-controller="Ticket" asp-action="Status" asp-route-id="@item.Id" class="btn btn-success btn-sm text-white">UserAdd</a>
+                </td>
             </tr>
-        </thead>
-    </table>
-    <form method="get">
-        <button formaction="/Customer/Ticket/Index/10">Click Me</button>
+                }
+                @{ Model.Sayac += 2;}
+                <tr>
+                    <a asp-controller="Ticket" asp-action="Index" asp-route-id="@Model.Sayac">Next</a>
+                </tr>
+                @{ Model.Sayac -= 4;}
+                <tr>
+                    <a asp-controller="Ticket" asp-action="Index" asp-route-id="@Model.Sayac">Previous</a>
+                </tr>
+            </table>
+        }
+        else
+        {
+            <p>No books available</p>
+        }
     </form>
 </div>
 @section Scripts{

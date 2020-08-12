@@ -21,8 +21,7 @@ namespace TicketProject.DataAccess.Reposityory
         public IApplicationUserRepository ApplicationUser { get; private set; }
         public ITicketRepository Ticket { get; private set; }
         public ICompanyRepository Company { get; private set; }
-
-        public ITicketManagement TicketManagement { get; private set; }
+        public ITicket_ManagementRepository Ticket_Management { get; private set; }
 
         public ISP_Call SP_Call { get; private set; }
 

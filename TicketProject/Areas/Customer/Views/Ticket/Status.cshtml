@@ -1,0 +1,38 @@
+﻿@model TicketProject.Models.Ticket_Management
+@{
+    ViewData["Title"] = "Status";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Status</h1>
+<ul>
+    <li>
+        <p>Date: @Model.Date </p>
+    </li>
+    @if (Model.Status > 0)
+    {
+        <li>
+            <p>Oluşturuldu</p>
+        </li>
+    }
+    @if ((int)Model.Status > 1)
+    {
+        <li>
+            <p>Departmana atıldı...</p>
+        </li>
+    }
+    @if ((int)Model.Status > 2)
+    {
+        <li>
+            <p>Cevaplandı</p>
+        </li>
+    }
+    @if ((int)Model.Status > 3)
+    {
+        <li>
+            <p>Çözüldü</p>
+        </li>
+    }
+    <a asp-controller="Ticket" asp-action="Index" class="btn btn-success btn-sm text-white">Back To List</a>
+</ul>
+
