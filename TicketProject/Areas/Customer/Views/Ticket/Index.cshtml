@@ -51,17 +51,15 @@
                     <a asp-controller="Ticket" asp-action="UserAdd" asp-route-id="@item.Id" class="btn btn-success btn-sm text-white">UserAdd</a>
                 </td>
                 <td>
-                    <a asp-controller="Ticket" asp-action="Status" asp-route-id="@item.Id" class="btn btn-success btn-sm text-white">UserAdd</a>
+                    <a asp-controller="Ticket" asp-action="Status" asp-route-id="@item.Id" class="btn btn-success btn-sm text-white">Status</a>
                 </td>
             </tr>
                 }
-                @{ Model.Sayac += 2;}
                 <tr>
-                    <a asp-controller="Ticket" asp-action="Index" asp-route-id="@Model.Sayac">Next</a>
+                    <a asp-controller="Ticket" asp-action="Index" asp-all-route-data='new Dictionary<string, string>() { { "page", (Model.PageNumber + 1).ToString() } }'>Next</a>
                 </tr>
-                @{ Model.Sayac -= 4;}
                 <tr>
-                    <a asp-controller="Ticket" asp-action="Index" asp-route-id="@Model.Sayac">Previous</a>
+                    <a asp-controller="Ticket" asp-action="Index" asp-all-route-data='new Dictionary<string, string>() { { "page", (Model.PageNumber - 1).ToString() } }'>Previous</a>
                 </tr>
             </table>
         }

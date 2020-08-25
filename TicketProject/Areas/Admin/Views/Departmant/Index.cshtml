@@ -1,0 +1,54 @@
+﻿@model TicketProject.Areas.Admin.DepartmentModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<br />
+<div class="row">
+    <div class="col-6">
+        <h2 class="text-primary">Ticket List </h2>
+    </div>
+    <div class="col-6 text-right">
+        <a class="btn btn-primary" asp-action="Upsert"><i class="fas fa-plus"></i> &nbsp; Create New Department</a>
+    </div>
+</div>
+<br />
+<div class="p-4 border rounded">
+    <form method="post">
+        @if (Model.Departments.Count() != 0)
+        {
+            <table class="table table-striped border">
+                <tr class="table-secondary">
+                    <th>
+                        <label asp-for="Departments.FirstOrDefault().Name"></label>
+                    </th>
+                </tr>
+                @foreach (var item in Model.Departments)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(m => item.Name)
+                        </td>
+                        <td>
+                            <a asp-action="Delete" asp-route-id="@item.Id" onClick="return confirm('Are you sure you want to delete')" class="btn btn-danger btn-sm">Delete</a>
+                            <a asp-controller="Department" asp-action="Upsert" asp-route-id="@item.Id" class="btn btn-success btn-sm text-white">Edit</a>
+                        </td>
+                    </tr>
+                }
+                <tr>
+                    <a asp-controller="Department" asp-action="Index" asp-all-route-data='new Dictionary<string, string>() { { "page", (Model.PageNumber + 1).ToString() } }'>Next</a>
+                </tr>
+                <tr>
+                    <a asp-controller="Department" asp-action="Index" asp-all-route-data='new Dictionary<string, string>() { { "page", (Model.PageNumber - 1).ToString() } }'>Previous</a>
+                </tr>
+            </table>
+        }
+        else
+        {
+            <p>No books available</p>
+        }
+    </form>
+</div>
+@section Scripts{
+    <script src="~/js/ticket1.js"></script>
+}

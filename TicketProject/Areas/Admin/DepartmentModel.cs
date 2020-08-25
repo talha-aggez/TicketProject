@@ -4,11 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using TicketProject.Models;
 
-namespace TicketProject.Areas.Customer
+namespace TicketProject.Areas.Admin
 {
-    public class TicketViewModel
+    public class DepartmentModel
     {
-        public IEnumerable<Ticket> Tickets { get; set; }
+        public IEnumerable<Departments> Departments { get; set; }
         public int PageNumber { get; set; }
     }
 }

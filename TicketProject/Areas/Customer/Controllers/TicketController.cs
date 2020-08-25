@@ -38,20 +38,12 @@ namespace TicketProject.Areas.Admin.Controllers
             _hostEnvoirement = hostEnvironment;
             _db = db;
         }
-        public async Task<IActionResult> Index(int? id)
+        public async Task<IActionResult> Index(int page = 1, int pageSize = 2)
         {
-            int temp;
-            if (id == null || id < 0)
-            {
-                temp = 0;
-            }
-            else
-            {
-                temp = (int)id;
-            }
             var model = new TicketViewModel
             {
-                Sayac = temp,
+                PageNumber = page,
+                Tickets = null,
             };
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
@@ -60,15 +52,26 @@ namespace TicketProject.Areas.Admin.Controllers
             }
             //var roles = await _userManager.GetRolesAsync(user);
             await LoadAsync(user);
-            if (User.IsInRole(SD.Role_Admin) || User.IsInRole(SD.Role_CompanyAgents))
+            if (User.IsInRole(SD.Role_Admin))
             {
                 //var allObj = _db.Tickets.Take(2).ToList();
-                model.Tickets = await _db.Tickets.Skip(model.Sayac).Take(2).ToListAsync();
+                model.Tickets = await _db.Tickets.Where(u => u.status != RowStatus.Delete).Skip(((page - 1) * pageSize)).Take(pageSize).ToListAsync();
+                return View(model);
+            }
+            if (User.IsInRole(SD.Role_SupportUsers))
+            {
+                model.Tickets = await _db.Tickets.Where(u => u.status != RowStatus.Delete && u.PersonelTicket != null).Skip(((page - 1) * pageSize)).Take(pageSize).ToListAsync();
+                return View(model);
+            }
+            else if (User.IsInRole(SD.Role_CompanyAgents)){
+                ApplicationUser temp = new ApplicationUser();
+                temp = _db.ApplicationUsers.Where(u => u.UserName == user.UserName).FirstOrDefault();
+                model.Tickets = await _db.Tickets.OrderByDescending(s => s.Id ).Where(u => u.PersonelTicket == temp && u.status != RowStatus.Delete).Skip(((page - 1) * pageSize)).Take(pageSize).ToListAsync();
                 return View(model);
             }
             else
             {
-                model.Tickets = await _db.Tickets.OrderByDescending(s=> s.Id).Where(u => u.UserEmail == Username).Skip(model.Sayac).Take(2).ToListAsync();
+                model.Tickets = await _db.Tickets.OrderByDescending(s=> s.Id).Where(u => u.UserEmail == Username && u.status != RowStatus.Delete).Skip(((page - 1) * pageSize)).Take(pageSize).ToListAsync();
                 return View(model);
             }
         }
@@ -119,7 +122,7 @@ namespace TicketProject.Areas.Admin.Controllers
                 string a = userRoleViewModel.ticket.EmployeeEmail + " ";
                 int b = userRoleViewModel.ticket.Id;
                 userRoleViewModel.ticket.PersonelTicket = _db.ApplicationUsers.Where(x => x.Email == userRoleViewModel.ticket.EmployeeEmail).FirstOrDefault();
-                ticket_Management = _db.Ticket_Managements.Where(u => u.Ticket.Id == userRoleViewModel.ticket.Id).FirstOrDefault();
+                ticket_Management = _db.Ticket_Managements.Include(a => a.Ticket).Where(u => u.Ticket.Id == userRoleViewModel.ticket.Id).FirstOrDefault();
                 ticket_Management.Status = TicketStatus.Seen;
                 _unitofwork.Ticket.Update(userRoleViewModel.ticket);
                 _unitofwork.Save();
@@ -228,7 +231,7 @@ namespace TicketProject.Areas.Admin.Controllers
             }
             _unitofwork.Ticket.Update(objFromDb);
             _unitofwork.Save();
-            return Redirect("Ticket/Index");
+            return Redirect(nameof(Index));
         }
         public IActionResult Status(int? id)
         {
